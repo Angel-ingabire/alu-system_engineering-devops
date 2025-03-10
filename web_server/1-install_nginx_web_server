@@ -1,18 +1,22 @@
- #!/usr/bin/env bash
-# commands to install nginx on web server
+#!/bin/bash
 
-apt-get update
-apt-get install -y nginx
+# Update package lists
+apt update -y
 
-mkdir /etc/nginx/html
-touch /etc/nginx/html/index.html
-echo "Holberton School" > /etc/nginx/html/index.html
-printf %s "server {
-     listen      80 default_server;
-     listen      [::]:80 default_server;
-     root        /etc/nginx/html;
-     index       index.html index.htm;
-}
-" > /etc/nginx/sites-available/default
+# Install Nginx
+apt install nginx -y
 
-service nginx restart
+# Ensure Nginx is started (without using systemctl)
+service nginx start
+
+# Create a simple webpage that contains "Holberton School"
+echo "Holberton School for the win!" | tee /var/www/html/index.html
+
+# Allow HTTP traffic through the firewall
+ufw allow 80/tcp
+
+# Reload Nginx to apply changes
+nginx -s reload
+
+echo "Nginx installed and configured successfully!"
+

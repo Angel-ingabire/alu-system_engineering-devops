@@ -1,18 +1,29 @@
 #!/usr/bin/env bash
-# commands to install nginx on web server
+# Script to install and configure Nginx on Ubuntu
 
+# Update package lists
 apt-get update
+
+# Install Nginx
 apt-get install -y nginx
 
-mkdir /etc/nginx/html
-touch /etc/nginx/html/index.html
-echo "Holberton School" > /etc/nginx/html/index.html
+# Create the web root directory and index file
+mkdir -p /var/www/html
+echo "Holberton School for the win!" > /var/www/html/index.html
+
+# Configure Nginx to serve from /var/www/html
 printf %s "server {
-     listen      80 default_server;
-     listen      [::]:80 default_server;
-     root        /etc/nginx/html;
-     index       index.html index.htm;
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.html index.htm;
+    server_name _;
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
 }
 " > /etc/nginx/sites-available/default
 
+# Restart Nginx without using systemctl
 service nginx restart
+

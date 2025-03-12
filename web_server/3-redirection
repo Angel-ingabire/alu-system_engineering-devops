@@ -1,22 +1,33 @@
 #!/usr/bin/env bash
-# bash script that configures a Nginx server to redirect '/redirect_me' to 'http://youtube.com/'
-# redirection is configured as a "301 Moved Permanently"
+# Bash script that configures Nginx to redirect '/redirect_me' to 'https://github.com/Angel-ingabire/'
+# Redirection is configured as a "301 Moved Permanently"
 
-apt-get update
+# Update package list and install Nginx
+apt-get update -y
 apt-get install -y nginx
 
-mkdir /etc/nginx/html
-touch /etc/nginx/html/index.html
-echo "Holberton School" > /etc/nginx/html/index.html
-printf %s "server {
+# Ensure the document root exists and create an index file
+mkdir -p /var/www/html
+echo "Holberton School" > /var/www/html/index.html
+
+# Configure Nginx redirection
+cat > /etc/nginx/sites-available/default <<EOF
+server {
     listen 80;
     listen [::]:80 default_server;
-    root   /etc/nginx/html;
-    index  index.html index.htm;
+    root /var/www/html;
+    index index.html index.htm;
 
     location /redirect_me {
         return 301 https://github.com/Angel-ingabire/;
     }
-}" > /etc/nginx/sites-available/default
 
-service nginx restart
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}
+EOF
+
+# Test configuration and restart Nginx
+nginx -t && service nginx restart
+

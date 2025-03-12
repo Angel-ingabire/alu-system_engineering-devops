@@ -1,35 +1,22 @@
 #!/usr/bin/env bash
-# Install Nginx if not installed
-if ! command -v nginx &> /dev/null
-then
-    sudo apt update
-    sudo apt install -y nginx
-fi
+# bash script that configures a Nginx server to redirect '/redirect_me' to 'http://youtube.com/'
+# redirection is configured as a "301 Moved Permanently"
 
-# Backup the existing configuration file
-sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+apt-get update
+apt-get install -y nginx
 
-# Configure the redirection in Nginx
-sudo bash -c 'cat <<EOT >> /etc/nginx/sites-available/default
-server {
+mkdir /etc/nginx/html
+touch /etc/nginx/html/index.html
+echo "Holberton School" > /etc/nginx/html/index.html
+printf %s "server {
     listen 80;
-
-    server_name _;
+    listen [::]:80 default_server;
+    root   /etc/nginx/html;
+    index  index.html index.htm;
 
     location /redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+        return 301 https://github.com/Angel-ingabire/;
     }
+}" > /etc/nginx/sites-available/default
 
-    # Other configurations...
-}
-EOT'
-
-# Test the Nginx configuration
-sudo nginx -t
-
-# Restart Nginx to apply the changes
-sudo systemctl restart nginx
-
-# Print a success message
-echo "Redirection configured successfully. Test it with curl."
-
+service nginx restart
